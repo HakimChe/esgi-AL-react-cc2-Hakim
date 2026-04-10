@@ -35,12 +35,31 @@ export const CataloguePage = () => {
 
   // TODO : écrire le useQuery ici
 
+  const{
+    data: movies,
+    loading,
+    error,
+  } = useQuery<Movie[]>({
+    queryKey: ["movies", search, genre],
+    queryFn: async () => {
+      const reponse = await api.get<Movie[]>(`/movies?search=${search}&genre=${genre}`);
+
+      if (!reponse.ok) {
+        throw new Error("Erreur lors du chargement des films");
+      }
+      return reponse.json();
+    }
+  });
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Catalogue</h1>
       <SearchBar onSearch={setSearch} onGenreChange={setGenre} />
 
       {/* TODO : afficher loading, error, et la liste de films */}
+      {loading && <p>Chargement des films ...</p>}
+
+      {error && <p>Erreur lors du chargement des films</p>}
+
     </div>
   );
 };
